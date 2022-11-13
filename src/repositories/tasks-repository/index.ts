@@ -21,7 +21,7 @@ async function findManyTasks(): Promise<QueryResult<any>>{
     return(allTasks.rows);
 } 
 
-async function insertOneTask(task: object, studentId: string): Promise<QueryResult<any>>{
+async function insertOneTask(task: object, studentId: string): Promise<QueryResult<Task>>{
 
     const newTask = task as Task;
     const { name, description } = newTask;
@@ -35,5 +35,11 @@ async function insertOneTask(task: object, studentId: string): Promise<QueryResu
     );
 }
 
+async function deleteOneTask(taskId: string): Promise<QueryResult<any>>{
 
-export { findManyTasks, insertOneTask };
+    await connection.query(`
+        DELETE FROM tasks WHERE id=$1;`,[taskId]
+    );
+}
+
+export { findManyTasks, insertOneTask, deleteOneTask };
