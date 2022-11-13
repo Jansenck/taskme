@@ -12,6 +12,19 @@ async function findManyStudents(): Promise<QueryResult<Student>>{
     return(allStudents.rows);
 } 
 
+async function insertOneStudent(student: object): Promise<QueryResult<Student>>{
+
+    const newStudent = student as Student;
+    const { name } = newStudent;
+
+    await connection.query(`
+
+        INSERT INTO "students" (name) VALUES ($1);`,
+        [name]
+    );
+}
+
 export { 
     findManyStudents, 
+    insertOneStudent
 };

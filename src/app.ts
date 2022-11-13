@@ -10,6 +10,7 @@ import {
 
 import { 
     lisStudents,
+    addStudent
  } from "./controllers/students-controller.js";
 
 const app = express();
@@ -18,6 +19,7 @@ app
     .use(cors())
     .use(json())
     .get("/students", lisStudents)
+    .post("/students", addStudent)
     .post("/task/:studentId", addTask)
     .get("/tasks", listTasks)
     .delete("/tasks/:taskId", deleteTask)
