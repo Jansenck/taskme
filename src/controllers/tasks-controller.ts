@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { findManyTasks, insertOneTask, deleteOneTask } from "../repositories/tasks-repository/index.js";
+import { 
+    findManyTasks, 
+    insertOneTask, 
+    deleteOneTask,
+    updateOneTask
+} from "../repositories/tasks-repository/index.js";
 
 async function listTasks(_req: Request, res: Response){
 
@@ -32,6 +37,24 @@ async function addTask(req: Request, res: Response){
     }
 }
 
+async function updateTask(req: Request, res: Response){
+
+    const task = req.body;
+    const { taskId } = req.params;
+
+    if(!taskId) return res.sendStatus(StatusCodes.BAD_REQUEST);
+
+    try {
+
+        await updateOneTask(task, taskId);
+        return res.sendStatus(StatusCodes.OK); 
+        
+    } catch (error) {
+        console.error(error.message);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 async function deleteTask(req: Request, res: Response){
 
     const { taskId } = req.params;
@@ -49,4 +72,4 @@ async function deleteTask(req: Request, res: Response){
     }
 }
 
-export { listTasks, addTask, deleteTask };
+export { listTasks, addTask, deleteTask, updateTask };

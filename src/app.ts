@@ -1,6 +1,11 @@
 import express, {json} from "express";
-import { listTasks, addTask, deleteTask } from "./controllers/tasks-controller.js";
 import cors from "cors";
+import { 
+    listTasks, 
+    addTask, 
+    deleteTask,
+    updateTask 
+} from "./controllers/tasks-controller.js";
 
 const app = express();
 
@@ -9,6 +14,7 @@ app
     .use(json())
     .post("/task/:studentId", addTask)
     .get("/tasks", listTasks)
-    .delete("/tasks/:taskId", deleteTask);
+    .delete("/tasks/:taskId", deleteTask)
+    .put("/tasks/:taskId", updateTask);
 
 export default app;

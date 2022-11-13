@@ -2,7 +2,7 @@ import { QueryResult } from "pg";
 import { connection } from "../../config/database.js"
 import { Task } from "../../protocols/tasks-protocol.js";
 
-async function findManyTasks(): Promise<QueryResult<any>>{
+async function findManyTasks(): Promise<QueryResult<Task>>{
 
     const allTasks = await connection.query(`
         	
@@ -35,11 +35,50 @@ async function insertOneTask(task: object, studentId: string): Promise<QueryResu
     );
 }
 
-async function deleteOneTask(taskId: string): Promise<QueryResult<any>>{
+async function deleteOneTask(taskId: string): Promise<QueryResult<Task>>{
 
     await connection.query(`
         DELETE FROM tasks WHERE id=$1;`,[taskId]
     );
 }
 
-export { findManyTasks, insertOneTask, deleteOneTask };
+async function updateOneTask(task:object , taskId: string): Promise<QueryResult<Task>>{
+
+    const newTask = task as Task;
+    const { name, description, status } = newTask;
+
+    const selectedTask = await connection.query(`
+        SELECT * FROM tasks WHERE id=$1;`,
+        [taskId]
+    );
+
+    const taskDataExists = {
+        dataName: name !== undefined,
+        dataDescription: description !== undefined,
+        DataStatus: status !== undefined
+    };
+
+    const { dataName, dataDescription, DataStatus } = taskDataExists;
+
+    await connection.query(`
+    
+        UPDATE tasks SET 
+            name = $1,
+            description = $2,
+            status = $3
+            WHERE id = $4;`,
+        [
+            dataName? name : selectedTask.rows[0].name, 
+            dataDescription? description : selectedTask.rows[0].description, 
+            DataStatus? status : selectedTask.rows[0].status, 
+            taskId
+        ]
+    ); 
+}
+
+export { 
+    findManyTasks, 
+    insertOneTask, 
+    deleteOneTask, 
+    updateOneTask 
+};
