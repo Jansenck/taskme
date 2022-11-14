@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { object } from "joi";
+import { QueryResult } from "pg";
+
+import { Task } from "../protocols/tasks-protocol.js";
+
 import { 
     findManyTasks, 
     insertOneTask, 
@@ -7,11 +12,11 @@ import {
     updateOneTask
 } from "../repositories/tasks-repository/index.js";
 
-async function listTasks(_req: Request, res: Response){
+async function listTasks(_req: Request, res: Response): Promise<Response<string, Record<string, Task>>>{
 
     try {
-        const tasks = await findManyTasks();
-        return res.status(StatusCodes.OK).send(tasks);
+        const tasks: QueryResult<Task> = await findManyTasks();
+        return res.status(StatusCodes.OK).send(tasks.rows);
         
     } catch (error) {
         console.error(error.message);
@@ -19,9 +24,10 @@ async function listTasks(_req: Request, res: Response){
     }
 }
 
-async function addTask(req: Request, res: Response){
+async function addTask(req: Request, res: Response): Promise<Response<string, Record<string, Task>>>{
 
-    const task = req.body;
+    const task: Task = req.body;
+
     const { studentId } = req.params;
 
     if(!task || !studentId) return res.sendStatus(StatusCodes.BAD_REQUEST);
@@ -29,6 +35,7 @@ async function addTask(req: Request, res: Response){
     try {
 
         await insertOneTask(task, studentId);
+
         return res.sendStatus(StatusCodes.CREATED); 
         
     } catch (error) {
@@ -37,9 +44,9 @@ async function addTask(req: Request, res: Response){
     }
 }
 
-async function updateTask(req: Request, res: Response){
+async function updateTask(req: Request, res: Response): Promise<Response<string, Record<string, Task>>>{
 
-    const task = req.body;
+    const task: Task = req.body;
     const { taskId } = req.params;
 
     if(!taskId) return res.sendStatus(StatusCodes.BAD_REQUEST);
@@ -55,7 +62,7 @@ async function updateTask(req: Request, res: Response){
     }
 }
 
-async function deleteTask(req: Request, res: Response){
+async function deleteTask(req: Request, res: Response): Promise<Response<string, Record<string, Task>>>{
 
     const { taskId } = req.params;
 

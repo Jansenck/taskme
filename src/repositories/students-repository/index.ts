@@ -1,30 +1,37 @@
 import { QueryResult } from "pg";
-import { connection } from "../../config/database.js"
+import connection from "../../config/database.js"
 import { Student } from "../../protocols/students-protocol.js";
 
 async function findManyStudents(): Promise<QueryResult<Student>>{
 
-    const allStudents = await connection.query(`
+    return (await connection.query(`
         	
         SELECT * FROM students ORDER BY students.id ASC;
-    `); 
+    `)); 
 
-    return(allStudents.rows);
 } 
 
-async function insertOneStudent(student: object): Promise<QueryResult<Student>>{
+function insertOneStudent(student: object): void{
 
     const newStudent = student as Student;
     const { name } = newStudent;
 
-    await connection.query(`
+    connection.query(`
 
         INSERT INTO "students" (name) VALUES ($1);`,
         [name]
     );
 }
 
+function deleteOneStudent(studentId: string): void{
+
+    connection.query(`
+        DELETE FROM students WHERE id=$1;`,[studentId]
+    );
+}
+
 export { 
     findManyStudents, 
-    insertOneStudent
+    insertOneStudent,
+    deleteOneStudent
 };

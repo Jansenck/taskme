@@ -1,4 +1,5 @@
 import express, {json} from "express";
+import { Express } from "express";
 import cors from "cors";
 
 import { 
@@ -10,16 +11,18 @@ import {
 
 import { 
     lisStudents,
-    addStudent
+    addStudent,
+    deleteStudent
  } from "./controllers/students-controller.js";
 
-const app = express();
+const app: Express = express();
 
 app
     .use(cors())
     .use(json())
-    .get("/students", lisStudents)
     .post("/students", addStudent)
+    .get("/students", lisStudents)
+    .delete("/students/:studentId", deleteStudent)
     .post("/task/:studentId", addTask)
     .get("/tasks", listTasks)
     .delete("/tasks/:taskId", deleteTask)
