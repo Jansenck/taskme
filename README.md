@@ -122,12 +122,12 @@ UPDATE: */tasks/:taskId*
 
 ## Technologies
 
--GIT
--GITHUB
--LINUX
--NODE
--TYPESCRIPT
--POSTGRES
+- GIT
+- GITHUB
+- LINUX
+- NODE
+- TYPESCRIPT
+- POSTGRES
 
 ## How to use
 
