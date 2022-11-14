@@ -1,4 +1,4 @@
-export type NewTask = Partial<Task>
+export type NewTask = Omit<Task, "id">
 
 export type Task = {
     id: number,

@@ -7,6 +7,7 @@ import { Task } from "../protocols/tasks-protocol.js";
 
 import { 
     findManyTasks, 
+    findPendingTasks,
     insertOneTask, 
     deleteOneTask,
     updateOneTask
@@ -16,6 +17,18 @@ async function listTasks(_req: Request, res: Response): Promise<Response<string,
 
     try {
         const tasks: QueryResult<Task> = await findManyTasks();
+        return res.status(StatusCodes.OK).send(tasks.rows);
+        
+    } catch (error) {
+        console.error(error.message);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function listPendingTasks(_req: Request, res: Response): Promise<Response<string, Record<string, Task>>>{
+
+    try {
+        const tasks: QueryResult<Task> = await findPendingTasks();
         return res.status(StatusCodes.OK).send(tasks.rows);
         
     } catch (error) {
@@ -79,4 +92,10 @@ async function deleteTask(req: Request, res: Response): Promise<Response<string,
     }
 }
 
-export { listTasks, addTask, deleteTask, updateTask };
+export { 
+    listTasks, 
+    addTask, 
+    deleteTask, 
+    updateTask, 
+    listPendingTasks 
+};

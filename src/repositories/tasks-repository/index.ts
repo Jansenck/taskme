@@ -1,10 +1,10 @@
 import { QueryResult } from "pg";
-import { connection } from "../../config/database.js"
-import { Task } from "../../protocols/tasks-protocol.js";
+import connection from "../../config/database.js"
+import { Task, NewTask } from "../../protocols/tasks-protocol.js";
 
 async function findManyTasks(): Promise<QueryResult<Task>>{
 
-    const allTasks = await connection.query(`
+    return (await connection.query(`
         	
         SELECT 
         tasks.id,
@@ -16,17 +16,33 @@ async function findManyTasks(): Promise<QueryResult<Task>>{
         JOIN students
         ON tasks."studentId" = students.id
         ORDER BY tasks.id ASC;
-    `); 
-
-    return(allTasks.rows);
+    `));
 } 
 
-async function insertOneTask(task: object, studentId: string): Promise<QueryResult<Task>>{
+async function findPendingTasks(): Promise<QueryResult<Task>>{
 
-    const newTask = task as Task;
+    return (await connection.query(`
+        	
+        SELECT 
+        tasks.id,
+        students.name AS "name",
+        tasks.name AS "task",
+        tasks.description,
+        tasks.status AS "status"
+        FROM tasks
+        JOIN students
+        ON tasks."studentId" = students.id
+        WHERE status = false
+        ORDER BY tasks.id ASC;
+    `));
+} 
+
+async function insertOneTask(task: object, studentId: string): Promise<QueryResult<NewTask>>{
+
+    const newTask = task as NewTask;
     const { name, description } = newTask;
 
-    await connection.query(`
+    return await connection.query(`
 
         INSERT INTO "tasks" 
         (name, description, "studentId")
@@ -35,24 +51,28 @@ async function insertOneTask(task: object, studentId: string): Promise<QueryResu
     );
 }
 
-async function deleteOneTask(taskId: string): Promise<QueryResult<Task>>{
+function deleteOneTask(taskId: string): void{
 
-    await connection.query(`
+    connection.query(`
         DELETE FROM tasks WHERE id=$1;`,[taskId]
     );
 }
 
-async function updateOneTask(task:object , taskId: string): Promise<QueryResult<Task>>{
+async function updateOneTask(task:object , taskId: string): Promise<QueryResult<NewTask>>{
 
-    const newTask = task as Task;
+    const newTask = task as NewTask;
     const { name, description, status } = newTask;
 
-    const selectedTask = await connection.query(`
+    const selectedTask: QueryResult = await connection.query(`
         SELECT * FROM tasks WHERE id=$1;`,
         [taskId]
     );
 
-    const taskDataExists = {
+    const taskDataExists: {
+        dataName: boolean,
+        dataDescription: boolean,
+        DataStatus: boolean
+    } = {
         dataName: name !== undefined,
         dataDescription: description !== undefined,
         DataStatus: status !== undefined
@@ -60,7 +80,7 @@ async function updateOneTask(task:object , taskId: string): Promise<QueryResult<
 
     const { dataName, dataDescription, DataStatus } = taskDataExists;
 
-    await connection.query(`
+    return await connection.query(`
     
         UPDATE tasks SET 
             name = $1,
@@ -78,6 +98,7 @@ async function updateOneTask(task:object , taskId: string): Promise<QueryResult<
 
 export { 
     findManyTasks, 
+    findPendingTasks,
     insertOneTask, 
     deleteOneTask, 
     updateOneTask 

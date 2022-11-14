@@ -4,6 +4,7 @@ import cors from "cors";
 
 import { 
     listTasks, 
+    listPendingTasks,
     addTask, 
     deleteTask,
     updateTask 
@@ -25,6 +26,7 @@ app
     .delete("/students/:studentId", deleteStudent)
     .post("/task/:studentId", addTask)
     .get("/tasks", listTasks)
+    .get("/tasks/pending", listPendingTasks)
     .delete("/tasks/:taskId", deleteTask)
     .put("/tasks/:taskId", updateTask);
 
