@@ -131,15 +131,15 @@ UPDATE: */tasks/:taskId*
 
 ## How to use
 
-1- Clone the repository
-2- Use the dump.sql as database model to create a database
-3- Install all project dependencies
+1) Clone the repository
+2) Use the dump.sql as database model to create a database
+3) Install all project dependencies
 
 ```git
   npm i
 ```
-4 - Config .env file
-5 - Start the app
+4) Config .env file
+5) Start the app
 
 ```git
 npx nodemon src/server.ts
